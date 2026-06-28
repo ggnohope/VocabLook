@@ -63,12 +63,12 @@ final class Store {
             if let existing = try Entry.filter(Column("normalized") == normalized).fetchOne(db) {
                 return existing
             }
-            var entry = Entry(id: UUID().uuidString, term: term, normalized: normalized,
+            let entry = Entry(id: UUID().uuidString, term: term, normalized: normalized,
                               definition: definition, partOfSpeech: partOfSpeech, ipa: ipa,
                               contextText: context, sourceApp: sourceApp, sourceDetail: sourceDetail,
                               createdAt: now)
             try entry.insert(db)
-            var card = Card.fresh(entryId: entry.id, now: now)
+            let card = Card.fresh(entryId: entry.id, now: now)
             try card.insert(db)
             return entry
         }
@@ -99,7 +99,7 @@ final class Store {
     }
 
     func appendLog(_ log: ReviewLog) throws {
-        try dbQueue.write { db in var l = log; try l.insert(db) }
+        try dbQueue.write { db in try log.insert(db) }
     }
 
     // MARK: - Stats for the popover
