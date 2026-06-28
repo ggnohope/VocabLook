@@ -9,6 +9,7 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp scripts/Info.plist "$APP/Contents/Info.plist"
 cp "$BIN" "$APP/Contents/MacOS/VocabLook"
+[ -f Resources/AppIcon.icns ] && cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 # Sign with a stable identity so the TCC (Accessibility / Input Monitoring) grant survives rebuilds.
 # Falls back to ad-hoc if the "VocabLook Dev" self-signed identity is not installed.
 SIGN_ID="VocabLook Dev"
