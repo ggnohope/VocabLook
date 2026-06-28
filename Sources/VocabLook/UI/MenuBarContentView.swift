@@ -2,7 +2,6 @@ import SwiftUI
 
 struct MenuBarContentView: View {
     @EnvironmentObject var app: AppState
-    @Environment(\.openWindow) private var openWindow
 
     private static let timeFmt: DateFormatter = {
         let f = DateFormatter(); f.dateFormat = "h:mm a"; return f
@@ -22,14 +21,6 @@ struct MenuBarContentView: View {
         .frame(width: 320)
         .tint(Color.inkIndigo)
         .onAppear { app.refresh() }
-        .onReceive(NotificationCenter.default.publisher(for: .openReviewWindow)) { _ in
-            openWindow(id: "review")
-            NSApp.activate(ignoringOtherApps: true)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .openOnboarding)) { _ in
-            openWindow(id: "onboarding")
-            NSApp.activate(ignoringOtherApps: true)
-        }
     }
 
     private var header: some View {
@@ -42,7 +33,7 @@ struct MenuBarContentView: View {
                     .padding(.horizontal, 8).padding(.vertical, 3)
                     .background(Color.inkIndigo.opacity(0.14), in: Capsule())
             }
-            Button { openWindow(id: "settings") } label: { Image(systemName: "gearshape") }
+            Button { WindowManager.shared.showSettings() } label: { Image(systemName: "gearshape") }
                 .buttonStyle(.plain).foregroundColor(.secondary)
         }
     }
@@ -55,8 +46,7 @@ struct MenuBarContentView: View {
             }
             Spacer()
             Button("Start review →") {
-                openWindow(id: "review")
-                NSApp.activate(ignoringOtherApps: true)
+                WindowManager.shared.showReview(scope: .due)
             }
             .buttonStyle(.borderedProminent)
             .disabled(app.dueCount == 0)
@@ -107,7 +97,10 @@ struct MenuBarContentView: View {
 
     private var footer: some View {
         HStack(spacing: 8) {
-            Button("History") { openWindow(id: "review") }.buttonStyle(.bordered).disabled(true)
+            Button("Review all") { WindowManager.shared.showReview(scope: .all) }
+                .buttonStyle(.bordered)
+                .disabled(app.totalLearned == 0)
+                .help("Practice every word now, regardless of when it's next due")
             Button("Quit") { NSApp.terminate(nil) }.buttonStyle(.bordered)
         }
         .controlSize(.small)

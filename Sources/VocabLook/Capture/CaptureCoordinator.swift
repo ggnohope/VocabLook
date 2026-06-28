@@ -21,8 +21,9 @@ final class CaptureCoordinator {
     func stop() { monitor.stop() }
 
     private func handleLookup() {
-        // Give the OS a beat to finalize the selection the user is looking up.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { [weak self] in
+        // Capture immediately: the native Look Up popover opens right after the keypress and can
+        // change the focused element, so reading the selection must happen before that.
+        DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             guard let captured = self.capturer.capture() else {
                 self.hud.show(term: "", subtitle: "Couldn't read the selection", onUndo: {})

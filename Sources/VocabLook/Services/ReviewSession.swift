@@ -1,8 +1,14 @@
 import Foundation
 
-/// Drives a single review pass over the cards due now.
+/// Drives a single review pass over a set of cards.
 @MainActor
 final class ReviewSession: ObservableObject {
+    /// Which cards to include in the session.
+    enum Scope {
+        case due   // only cards due now, with the daily new-card cap applied
+        case all   // every card, regardless of due date ("review ahead")
+    }
+
     struct Item: Identifiable { let card: Card; let entry: Entry; var id: String { card.id } }
 
     @Published var queue: [Item] = []
@@ -17,18 +23,24 @@ final class ReviewSession: ObservableObject {
     var progressText: String { "\(min(index + 1, max(total, 1))) / \(max(total, 1))" }
     var progressFraction: Double { total == 0 ? 0 : Double(index) / Double(total) }
 
-    init(store: Store = .shared, now: Date = Date()) {
+    init(scope: Scope = .due, store: Store = .shared, now: Date = Date()) {
         self.store = store
-        let due = (try? store.dueCards(now: now)) ?? []
-        let goal = max(0, Settings.dailyGoal)
-        var newSeen = 0
-        let selected = due.filter { pair in
-            if pair.card.repetitions == 0 {
-                guard newSeen < goal else { return false }
-                newSeen += 1
+        let selected: [(card: Card, entry: Entry)]
+        switch scope {
+        case .all:
+            selected = (try? store.allCards()) ?? []
+        case .due:
+            let due = (try? store.dueCards(now: now)) ?? []
+            let goal = max(0, Settings.dailyGoal)
+            var newSeen = 0
+            selected = due.filter { pair in
+                if pair.card.repetitions == 0 {
+                    guard newSeen < goal else { return false }
+                    newSeen += 1
+                    return true
+                }
                 return true
             }
-            return true
         }
         let items = selected.map { Item(card: $0.card, entry: $0.entry) }
         self.queue = items

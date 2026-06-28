@@ -31,8 +31,7 @@ struct SettingsView: View {
                 .onChange(of: launchAtLogin) { _, v in LaunchAtLogin.set(v) }
         }
         .formStyle(.grouped)
-        .padding(20)
-        .frame(width: 460)
+        .frame(width: 460, height: 360)
         .tint(Color.inkIndigo)
     }
 }

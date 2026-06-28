@@ -1,34 +1,69 @@
 import AppKit
+import CoreGraphics
 
-/// Observes Ctrl+Cmd+D system-wide WITHOUT consuming it, so the native Look Up still opens.
+/// Observes Ctrl+Cmd+D system-wide via a session-level CGEventTap (listen-only, so it does NOT
+/// consume the event — the native Look Up still opens). A passive NSEvent global monitor cannot
+/// see Ctrl+Cmd+D because macOS consumes that combo for the Look Up service before delivering it;
+/// a head-inserted session event tap sits early enough in the pipeline to observe it.
 final class HotkeyMonitor {
-    private var globalMonitor: Any?
-    private var localMonitor: Any?
-    private let keyCodeD: UInt16 = 0x02 // ANSI 'D'
+    private var eventTap: CFMachPort?
+    private var runLoopSource: CFRunLoopSource?
+    private let keyCodeD: Int64 = 0x02 // ANSI 'D'
 
     /// Called on the main thread when Ctrl+Cmd+D is pressed.
     var onLookup: (() -> Void)?
 
     func start() {
-        // Global monitor: fires when another app is frontmost (the common case).
-        globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            self?.handle(event)
+        let mask = CGEventMask(1 << CGEventType.keyDown.rawValue)
+        let selfPtr = Unmanaged.passUnretained(self).toOpaque()
+
+        guard let tap = CGEvent.tapCreate(
+            tap: .cgSessionEventTap,
+            place: .headInsertEventTap,
+            options: .listenOnly,
+            eventsOfInterest: mask,
+            callback: { _, type, event, refcon in
+                if let refcon {
+                    Unmanaged<HotkeyMonitor>.fromOpaque(refcon)
+                        .takeUnretainedValue()
+                        .handleTap(type: type, event: event)
+                }
+                return Unmanaged.passUnretained(event)
+            },
+            userInfo: selfPtr
+        ) else {
+            AppLog.log("CGEvent.tapCreate FAILED (Input Monitoring not granted?)")
+            return
         }
-        // Local monitor: fires when one of our own windows is focused. Returns the event so it isn't swallowed.
-        localMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            self?.handle(event)
-            return event
-        }
+
+        let source = CFMachPortCreateRunLoopSource(nil, tap, 0)
+        CFRunLoopAddSource(CFRunLoopGetMain(), source, .commonModes)
+        CGEvent.tapEnable(tap: tap, enable: true)
+        eventTap = tap
+        runLoopSource = source
     }
 
     func stop() {
-        if let g = globalMonitor { NSEvent.removeMonitor(g); globalMonitor = nil }
-        if let l = localMonitor { NSEvent.removeMonitor(l); localMonitor = nil }
+        if let tap = eventTap { CGEvent.tapEnable(tap: tap, enable: false) }
+        if let source = runLoopSource { CFRunLoopRemoveSource(CFRunLoopGetMain(), source, .commonModes) }
+        eventTap = nil
+        runLoopSource = nil
     }
 
-    private func handle(_ event: NSEvent) {
-        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-        guard flags == [.control, .command], event.keyCode == keyCodeD else { return }
+    private func handleTap(type: CGEventType, event: CGEvent) {
+        // The OS can disable a tap after a timeout or heavy input; re-enable it.
+        if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
+            if let tap = eventTap { CGEvent.tapEnable(tap: tap, enable: true) }
+            return
+        }
+        guard type == .keyDown else { return }
+
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        let flags = event.flags
+        let hasCommand = flags.contains(.maskCommand)
+        let hasControl = flags.contains(.maskControl)
+
+        guard hasCommand, hasControl, keyCode == keyCodeD else { return }
         DispatchQueue.main.async { [weak self] in self?.onLookup?() }
     }
 }
