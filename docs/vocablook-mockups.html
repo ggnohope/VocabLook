@@ -1,0 +1,829 @@
+<title>VocabLook — UI/UX Mockups</title>
+<meta name="description" content="High-fidelity macOS mockups for VocabLook: capture dictionary lookups via Ctrl+Cmd+D and review them as spaced-repetition flashcards.">
+
+<style>
+  :root {
+    --bg: #e9e8ee;
+    --canvas-a: #c9c7e6;
+    --canvas-b: #e7d9e4;
+    --canvas-c: #d8e2ef;
+    --surface: #ffffff;
+    --surface-2: #f4f4f8;
+    --text: #1b1b22;
+    --muted: #6f6f7d;
+    --faint: #9a9aa6;
+    --border: rgba(20, 20, 40, 0.10);
+    --border-strong: rgba(20, 20, 40, 0.16);
+    --accent: #5b5bd6;
+    --accent-press: #4f4fc4;
+    --accent-soft: rgba(91, 91, 214, 0.12);
+    --again: #e5484d;
+    --hard: #e8973d;
+    --good: #30a46c;
+    --easy: #5b5bd6;
+    --shadow-lg: 0 24px 60px -18px rgba(30, 28, 60, 0.45), 0 8px 20px -10px rgba(30, 28, 60, 0.30);
+    --shadow-md: 0 12px 30px -12px rgba(30, 28, 60, 0.35);
+    --pop-bg: rgba(255, 255, 255, 0.72);
+    --pop-border: rgba(255, 255, 255, 0.6);
+    --radius: 14px;
+    --sans: -apple-system, "SF Pro Text", BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --serif: ui-serif, "New York", Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+
+  [data-theme="dark"] {
+    --bg: #131316;
+    --canvas-a: #2a2747;
+    --canvas-b: #3a2740;
+    --canvas-c: #1f2a3d;
+    --surface: #242429;
+    --surface-2: #2d2d33;
+    --text: #f2f2f5;
+    --muted: #a0a0ab;
+    --faint: #75757f;
+    --border: rgba(255, 255, 255, 0.09);
+    --border-strong: rgba(255, 255, 255, 0.16);
+    --accent: #8585f2;
+    --accent-press: #9a9af5;
+    --accent-soft: rgba(133, 133, 242, 0.16);
+    --again: #ec5d62;
+    --hard: #efaa5c;
+    --good: #46c08a;
+    --easy: #8585f2;
+    --shadow-lg: 0 24px 60px -18px rgba(0, 0, 0, 0.7), 0 8px 20px -10px rgba(0, 0, 0, 0.55);
+    --shadow-md: 0 12px 30px -12px rgba(0, 0, 0, 0.55);
+    --pop-bg: rgba(40, 40, 46, 0.72);
+    --pop-border: rgba(255, 255, 255, 0.12);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 28px 100px;
+  }
+
+  /* ---------- Page header ---------- */
+  header.page {
+    padding: 64px 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+  h1.title {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(38px, 6vw, 60px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
+  h1.title em { font-style: italic; color: var(--accent); }
+  .lede {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  .theme-toggle {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.15s ease, background 0.3s ease;
+  }
+  .theme-toggle:hover { transform: translateY(-1px); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ---------- Flow / how it works ---------- */
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin: 8px 0 64px;
+  }
+  .flow .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 16px 18px;
+    box-shadow: var(--shadow-md);
+  }
+  .flow .num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .flow h4 { margin: 8px 0 4px; font-size: 14px; }
+  .flow p { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  /* ---------- Sections ---------- */
+  section { margin: 0 0 76px; }
+  .sec-head { margin-bottom: 24px; max-width: 60ch; }
+  .sec-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--faint);
+    letter-spacing: 0.04em;
+  }
+  .sec-head h2 {
+    font-size: 24px;
+    letter-spacing: -0.01em;
+    margin: 6px 0 8px;
+  }
+  .sec-head p { margin: 0; color: var(--muted); font-size: 15px; }
+  .vi { display: block; font-size: 13.5px; color: var(--faint); margin-top: 3px; }
+
+  /* ---------- Desktop canvas (frames the chrome) ---------- */
+  .stage {
+    border-radius: 20px;
+    padding: 44px;
+    background:
+      radial-gradient(120% 120% at 15% 10%, var(--canvas-a), transparent 55%),
+      radial-gradient(120% 120% at 85% 20%, var(--canvas-b), transparent 50%),
+      radial-gradient(140% 140% at 50% 100%, var(--canvas-c), transparent 60%),
+      var(--bg);
+    border: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+    transition: background 0.4s ease;
+  }
+  .stage.two { gap: 36px; flex-wrap: wrap; align-items: flex-start; }
+
+  /* ---------- macOS menu bar + popover ---------- */
+  .menubar-scene { width: 360px; }
+  .menubar {
+    height: 26px;
+    background: var(--pop-bg);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid var(--pop-border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    padding: 0 12px;
+    margin-bottom: 9px;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .menubar .mb-icon { opacity: 0.65; font-size: 12px; }
+  .menubar .mb-active {
+    background: var(--accent);
+    color: #fff;
+    border-radius: 5px;
+    padding: 2px 6px;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(91,91,214,0.5);
+  }
+
+  .popover {
+    position: relative;
+    background: var(--pop-bg);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid var(--pop-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 14px;
+    color: var(--text);
+  }
+  .popover::before {
+    content: "";
+    position: absolute;
+    top: -7px; right: 26px;
+    width: 14px; height: 14px;
+    background: var(--pop-bg);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    backdrop-filter: blur(30px) saturate(180%);
+    border-left: 1px solid var(--pop-border);
+    border-top: 1px solid var(--pop-border);
+    transform: rotate(45deg);
+  }
+  .pop-top {
+    display: flex; align-items: center; gap: 9px;
+    padding: 2px 4px 12px;
+  }
+  .glyph {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: linear-gradient(150deg, var(--accent), #8a6cf0);
+    display: grid; place-items: center;
+    color: #fff; font-family: var(--serif); font-weight: 600; font-size: 15px;
+    box-shadow: 0 2px 8px rgba(91,91,214,0.45);
+  }
+  .pop-top .name { font-weight: 600; font-size: 14px; flex: 1; }
+  .pop-top .gear { color: var(--muted); font-size: 14px; }
+  .streak-pill {
+    font-size: 11.5px; font-weight: 600;
+    background: var(--accent-soft); color: var(--accent);
+    padding: 3px 8px; border-radius: 999px;
+  }
+
+  .due-card {
+    background: var(--accent);
+    border-radius: 11px;
+    padding: 14px 16px;
+    color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 8px 20px -8px rgba(91,91,214,0.7);
+  }
+  .due-card .big { font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+  .due-card .sub { font-size: 11.5px; opacity: 0.85; margin-top: 3px; }
+  .due-card .go {
+    background: rgba(255,255,255,0.95); color: var(--accent-press);
+    border: none; border-radius: 8px; padding: 9px 14px;
+    font-family: var(--sans); font-weight: 600; font-size: 13px; cursor: pointer;
+  }
+  .due-card .go:hover { background: #fff; }
+
+  .pop-meta {
+    display: flex; justify-content: space-between;
+    font-size: 11.5px; color: var(--muted);
+    padding: 13px 4px 9px;
+  }
+  .pop-meta b { color: var(--text); }
+
+  .recent { list-style: none; margin: 0; padding: 0; }
+  .recent li {
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 7px 6px; border-radius: 8px;
+  }
+  .recent li:hover { background: var(--accent-soft); }
+  .recent .w { font-family: var(--serif); font-size: 14px; font-weight: 500; }
+  .recent .src { font-size: 11px; color: var(--muted); flex: 1; }
+  .recent .t { font-size: 11px; color: var(--faint); font-variant-numeric: tabular-nums; }
+
+  .pop-foot {
+    display: flex; gap: 8px; padding: 12px 2px 2px; margin-top: 6px;
+    border-top: 1px solid var(--border);
+  }
+  .pop-foot button {
+    flex: 1; background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 8px; padding: 8px; font-family: var(--sans);
+    font-size: 12px; font-weight: 500; cursor: pointer;
+  }
+  .pop-foot button:hover { border-color: var(--border-strong); }
+
+  /* ---------- Capture HUD toast ---------- */
+  .hud {
+    background: rgba(28, 28, 32, 0.86);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    backdrop-filter: blur(24px) saturate(160%);
+    color: #fff;
+    border-radius: 14px;
+    padding: 13px 16px;
+    display: flex; align-items: center; gap: 13px;
+    box-shadow: var(--shadow-lg);
+    min-width: 300px;
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .hud .check {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--good); display: grid; place-items: center;
+    color: #fff; font-size: 15px; flex-shrink: 0;
+  }
+  .hud .htext { flex: 1; }
+  .hud .htext .l1 { font-size: 14px; }
+  .hud .htext .l1 b { font-family: var(--serif); font-weight: 600; }
+  .hud .htext .l2 { font-size: 11.5px; color: rgba(255,255,255,0.6); margin-top: 1px; }
+  .hud .undo {
+    background: transparent; border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; border-radius: 7px; padding: 6px 11px; font-size: 12px;
+    font-family: var(--sans); cursor: pointer;
+  }
+  .hud .undo:hover { background: rgba(255,255,255,0.12); }
+
+  /* ---------- App window (review) ---------- */
+  .window {
+    width: 460px;
+    background: var(--surface);
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .titlebar {
+    height: 40px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 14px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .tl { width: 12px; height: 12px; border-radius: 50%; }
+  .tl.r { background: #ff5f57; }
+  .tl.y { background: #febc2e; }
+  .tl.g { background: #28c840; }
+  .titlebar .ttext {
+    flex: 1; text-align: center; font-size: 12.5px; font-weight: 600;
+    color: var(--muted); margin-right: 52px;
+  }
+
+  .review { padding: 0 26px 24px; }
+  .rev-progress {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 0 22px;
+  }
+  .bar { flex: 1; height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+  .rev-progress .count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .card-face { text-align: center; padding: 14px 0 6px; }
+  .src-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; color: var(--muted);
+    background: var(--surface-2); border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 999px; margin-bottom: 22px;
+  }
+  .headword {
+    font-family: var(--serif);
+    font-size: 46px; font-weight: 600; letter-spacing: -0.02em;
+    line-height: 1; margin: 0;
+  }
+  .ipa-row {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    margin: 14px 0 4px;
+  }
+  .ipa { font-family: var(--mono); font-size: 15px; color: var(--muted); }
+  .speak {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--border-strong); background: var(--surface);
+    color: var(--accent); cursor: pointer; font-size: 14px;
+    display: grid; place-items: center;
+  }
+  .speak:hover { background: var(--accent-soft); }
+  .pos { font-style: italic; font-family: var(--serif); color: var(--faint); font-size: 14px; }
+
+  .reveal-hint {
+    margin: 26px 0 4px; font-size: 12px; color: var(--faint);
+  }
+  .reveal-hint kbd {
+    font-family: var(--mono); font-size: 11px;
+    background: var(--surface-2); border: 1px solid var(--border-strong);
+    border-bottom-width: 2px; border-radius: 5px; padding: 2px 7px; color: var(--muted);
+  }
+
+  /* back state */
+  .divider { height: 1px; background: var(--border); margin: 22px 0; }
+  .definition { text-align: left; }
+  .definition .dline { font-size: 16px; margin: 0 0 14px; }
+  .definition .dline .pos { margin-right: 8px; }
+  .context {
+    background: var(--surface-2); border-left: 3px solid var(--accent);
+    padding: 12px 14px; border-radius: 0 8px 8px 0;
+    font-family: var(--serif); font-size: 14.5px; line-height: 1.5; color: var(--text);
+  }
+  .context mark {
+    background: var(--accent-soft); color: var(--accent);
+    padding: 0 3px; border-radius: 3px; font-weight: 600;
+  }
+  .context .csrc { display:block; font-family: var(--sans); font-size: 11px; color: var(--faint); margin-top: 8px; }
+
+  .grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 22px; }
+  .grade {
+    border: 1px solid var(--border); background: var(--surface);
+    border-radius: 10px; padding: 11px 6px 9px; cursor: pointer;
+    text-align: center; font-family: var(--sans);
+    transition: transform 0.12s ease, border-color 0.2s ease;
+  }
+  .grade:hover { transform: translateY(-2px); }
+  .grade .gl { font-size: 13px; font-weight: 600; }
+  .grade .gi { font-size: 11px; color: var(--faint); margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .grade.again { border-color: color-mix(in srgb, var(--again) 40%, transparent); }
+  .grade.again .gl { color: var(--again); }
+  .grade.hard  { border-color: color-mix(in srgb, var(--hard) 40%, transparent); }
+  .grade.hard .gl { color: var(--hard); }
+  .grade.good  { border-color: color-mix(in srgb, var(--good) 40%, transparent); }
+  .grade.good .gl { color: var(--good); }
+  .grade.easy  { border-color: color-mix(in srgb, var(--easy) 45%, transparent); }
+  .grade.easy .gl { color: var(--easy); }
+
+  .caption {
+    margin-top: 16px; text-align: center; font-size: 12.5px; color: var(--muted);
+  }
+  .stage + .caption { max-width: 70ch; margin-left: auto; margin-right: auto; }
+
+  /* ---------- Notification banner ---------- */
+  .notif {
+    width: 360px;
+    background: var(--pop-bg);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid var(--pop-border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    padding: 14px; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .notif .glyph { width: 38px; height: 38px; border-radius: 9px; font-size: 20px; }
+  .notif .ntext { flex: 1; }
+  .notif .nhead { display:flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+  .notif .ntitle { font-weight: 600; font-size: 14px; margin: 2px 0 2px; }
+  .notif .nbody { font-size: 13px; color: var(--muted); }
+  .notif .nact {
+    margin-top: 10px; background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; padding: 7px 14px; font-family: var(--sans); font-weight: 600;
+    font-size: 12.5px; cursor: pointer;
+  }
+
+  /* ---------- Onboarding / permission ---------- */
+  .onboard { width: 440px; padding: 30px 30px 26px; text-align: center; }
+  .onboard .glyph { width: 52px; height: 52px; border-radius: 13px; font-size: 26px; margin: 0 auto 16px; }
+  .onboard h3 { font-size: 19px; margin: 0 0 8px; }
+  .onboard p { font-size: 13.5px; color: var(--muted); margin: 0 auto 18px; max-width: 40ch; }
+  .perm-steps { list-style: none; margin: 0 0 20px; padding: 0; text-align: left; }
+  .perm-steps li {
+    display: flex; gap: 11px; align-items: center;
+    padding: 10px 12px; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 9px; margin-bottom: 8px; font-size: 13px;
+  }
+  .perm-steps .pn {
+    width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color:#fff;
+    display: grid; place-items: center; font-size: 12px; font-weight: 600; flex-shrink: 0;
+  }
+  .perm-steps code { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .btn-primary {
+    background: var(--accent); color: #fff; border: none; border-radius: 9px;
+    padding: 11px 20px; font-family: var(--sans); font-weight: 600; font-size: 14px; cursor: pointer;
+    box-shadow: 0 8px 18px -8px rgba(91,91,214,0.7);
+  }
+  .btn-primary:hover { background: var(--accent-press); }
+
+  /* ---------- Settings glimpse ---------- */
+  .settings { width: 460px; }
+  .set-body { padding: 8px 22px 22px; }
+  .set-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .set-row:last-child { border-bottom: none; }
+  .set-row .sk { font-size: 13.5px; }
+  .set-row .sk small { display: block; color: var(--muted); font-size: 11.5px; }
+  .set-row .sv { font-size: 13px; color: var(--muted); }
+  .kbd-combo kbd {
+    font-family: var(--mono); font-size: 11px; background: var(--surface-2);
+    border: 1px solid var(--border-strong); border-bottom-width: 2px; border-radius: 5px;
+    padding: 2px 6px; color: var(--text); margin-left: 3px;
+  }
+  .switch {
+    width: 40px; height: 24px; border-radius: 999px; background: var(--good);
+    position: relative; flex-shrink: 0;
+  }
+  .switch.off { background: var(--surface-3, #c8c8d0); }
+  [data-theme="dark"] .switch.off { background: #45454d; }
+  .switch i { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background:#fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: left 0.2s; }
+  .switch.off i { left: 18px; }
+
+  /* feature roadmap */
+  .road { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .road .col {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px; box-shadow: var(--shadow-md);
+  }
+  .road h4 { margin: 0 0 4px; font-size: 14px; }
+  .road .tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .road .tag.mvp { color: var(--good); }
+  .road .tag.later { color: var(--faint); }
+  .road ul { margin: 12px 0 0; padding-left: 18px; }
+  .road li { font-size: 13px; color: var(--muted); margin-bottom: 7px; line-height: 1.4; }
+
+  footer.page { padding: 40px 0 0; border-top: 1px solid var(--border); color: var(--faint); font-size: 12.5px; }
+
+  @media (max-width: 720px) {
+    .flow, .road { grid-template-columns: 1fr; }
+    .stage { padding: 26px 16px; }
+    .window, .settings, .notif, .onboard, .menubar-scene { width: 100%; max-width: 420px; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .stage, .road .col, .flow .step { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+</style>
+
+<div class="wrap">
+  <header class="page">
+    <div>
+      <p class="eyebrow">macOS menu-bar app · UI/UX mockups</p>
+      <h1 class="title">Look up a word.<br>VocabLook <em>remembers</em> it for you.</h1>
+      <p class="lede">You keep using the native <strong>Ctrl + Cmd + D</strong> lookup. VocabLook quietly logs every word and the sentence you found it in, then serves it back as a spaced-repetition flashcard the next day.</p>
+    </div>
+    <button class="theme-toggle" id="themeBtn" aria-label="Toggle light or dark theme">
+      <span id="themeIcon">◐</span><span id="themeLabel">Dark</span>
+    </button>
+  </header>
+
+  <div class="flow">
+    <div class="step"><span class="num">01</span><h4>Capture</h4><p>Select text anywhere, press Ctrl+Cmd+D. The system Look Up still opens — we just listen.</p></div>
+    <div class="step"><span class="num">02</span><h4>Enrich</h4><p>We grab the word, its IPA &amp; definition, the surrounding sentence, and the source app.</p></div>
+    <div class="step"><span class="num">03</span><h4>Schedule</h4><p>Each word becomes a flashcard, first due tomorrow, then spaced by the SM-2 algorithm.</p></div>
+    <div class="step"><span class="num">04</span><h4>Review</h4><p>A daily nudge opens the deck. Grade each card; the schedule adapts to your memory.</p></div>
+  </div>
+
+  <!-- 1. Menu bar popover -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-label">screen 01 — always on hand</span>
+      <h2>Menu bar popover</h2>
+      <p>The home base. Click the status icon for today's haul, your streak, and one tap into review.
+        <span class="vi">Bấm icon trên thanh menu: số từ đến hạn, streak, và nút vào ôn ngay.</span>
+      </p>
+    </div>
+    <div class="stage">
+      <div class="menubar-scene">
+        <div class="menubar">
+          <span class="mb-icon">􀙇</span><span class="mb-icon">􀊫</span><span class="mb-active">VL 12</span><span class="mb-icon">9:41</span>
+        </div>
+        <div class="popover">
+          <div class="pop-top">
+            <span class="glyph">V</span>
+            <span class="name">VocabLook</span>
+            <span class="streak-pill">🔥 7 days</span>
+            <span class="gear">⚙</span>
+          </div>
+          <div class="due-card">
+            <div>
+              <div class="big">12</div>
+              <div class="sub">words due today</div>
+            </div>
+            <button class="go">Start review →</button>
+          </div>
+          <div class="pop-meta">
+            <span><b>8</b> new today</span>
+            <span><b>241</b> total learned</span>
+            <span><b>92%</b> recall</span>
+          </div>
+          <ul class="recent">
+            <li><span class="w">ephemeral</span><span class="src">Safari · The Atlantic</span><span class="t">2:14 PM</span></li>
+            <li><span class="w">ubiquitous</span><span class="src">Books</span><span class="t">1:50 PM</span></li>
+            <li><span class="w">perfunctory</span><span class="src">Mail</span><span class="t">11:32 AM</span></li>
+            <li><span class="w">quixotic</span><span class="src">Notes</span><span class="t">9:08 AM</span></li>
+          </ul>
+          <div class="pop-foot">
+            <button>History</button>
+            <button>Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Capture HUD -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-label">screen 02 — zero friction</span>
+      <h2>Capture confirmation</h2>
+      <p>A quiet HUD fades in for ~2 s after each lookup — proof it was saved, with an instant undo. Never blocks what you were reading.
+        <span class="vi">HUD nhỏ hiện ~2 giây xác nhận đã lưu, có nút Undo. Không chặn việc đang đọc.</span>
+      </p>
+    </div>
+    <div class="stage">
+      <div class="hud">
+        <div class="check">✓</div>
+        <div class="htext">
+          <div class="l1">Saved <b>ephemeral</b></div>
+          <div class="l2">Card created · first review tomorrow</div>
+        </div>
+        <button class="undo">Undo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Review window: front + back -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-label">screen 03 — the heart of it</span>
+      <h2>Flashcard review</h2>
+      <p>Front shows the word, IPA and a pronounce button. Reveal to see the definition and — the key trick — the exact sentence you originally read it in. Grade with one key; SM-2 sets the next interval.
+        <span class="vi">Mặt trước: từ + IPA + phát âm. Lật ra: nghĩa + đúng câu bạn từng đọc. Chấm điểm → SM-2 hẹn lần ôn sau.</span>
+      </p>
+    </div>
+    <div class="stage two">
+      <!-- FRONT -->
+      <div class="window">
+        <div class="titlebar">
+          <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+          <span class="ttext">Review · Front</span>
+        </div>
+        <div class="review">
+          <div class="rev-progress">
+            <div class="bar"><i style="width:25%"></i></div>
+            <span class="count">3 / 12</span>
+          </div>
+          <div class="card-face">
+            <span class="src-chip">🌐 Safari · The Atlantic · yesterday</span>
+            <p class="headword">ephemeral</p>
+            <div class="ipa-row">
+              <span class="ipa">/əˈfɛm(ə)rəl/</span>
+              <button class="speak" aria-label="Pronounce">􀊁</button>
+            </div>
+            <span class="pos">adjective</span>
+            <div class="reveal-hint">Press <kbd>Space</kbd> to reveal</div>
+          </div>
+        </div>
+      </div>
+      <!-- BACK -->
+      <div class="window">
+        <div class="titlebar">
+          <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+          <span class="ttext">Review · Revealed</span>
+        </div>
+        <div class="review">
+          <div class="rev-progress">
+            <div class="bar"><i style="width:25%"></i></div>
+            <span class="count">3 / 12</span>
+          </div>
+          <div class="card-face" style="padding-bottom:0">
+            <p class="headword" style="font-size:34px">ephemeral</p>
+          </div>
+          <div class="divider"></div>
+          <div class="definition">
+            <p class="dline"><span class="pos">adjective</span> lasting for a very short time; fleeting.</p>
+            <div class="context">
+              “Online fame is famously <mark>ephemeral</mark> — a viral moment evaporates within a day.”
+              <span class="csrc">— The sentence you looked it up in, Safari</span>
+            </div>
+          </div>
+          <div class="grades">
+            <button class="grade again"><div class="gl">Again</div><div class="gi">&lt;1 min</div></button>
+            <button class="grade hard"><div class="gl">Hard</div><div class="gi">2 days</div></button>
+            <button class="grade good"><div class="gl">Good</div><div class="gi">4 days</div></button>
+            <button class="grade easy"><div class="gl">Easy</div><div class="gi">9 days</div></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption">Grades map to keys 1–4. Intervals shown are live previews computed by the SM-2 scheduler from this card's history.</p>
+  </section>
+
+  <!-- 4. Notification + 5. Onboarding -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-label">screen 04 &amp; 05 — habit + setup</span>
+      <h2>Daily nudge &amp; first-run permission</h2>
+      <p>One notification a day at your chosen time. And an honest onboarding: VocabLook needs Accessibility to read the selected word — explained plainly, granted once.
+        <span class="vi">Một thông báo/ngày. Onboarding giải thích vì sao cần quyền Accessibility — cấp một lần.</span>
+      </p>
+    </div>
+    <div class="stage two">
+      <div class="notif">
+        <span class="glyph">V</span>
+        <div class="ntext">
+          <div class="nhead"><span>VocabLook</span><span>now</span></div>
+          <div class="ntitle">12 words ready to review</div>
+          <div class="nbody">Keep your 🔥 7-day streak alive — about 4 minutes.</div>
+          <button class="nact">Review now</button>
+        </div>
+      </div>
+      <div class="window onboard">
+        <span class="glyph">V</span>
+        <h3>One quick permission</h3>
+        <p>To read the word you look up, VocabLook needs macOS Accessibility access. It never reads anything until you press Ctrl+Cmd+D.</p>
+        <ol class="perm-steps">
+          <li><span class="pn">1</span><div>Open <strong>System Settings → Privacy &amp; Security → Accessibility</strong></div></li>
+          <li><span class="pn">2</span><div>Toggle on <code>VocabLook</code></div></li>
+          <li><span class="pn">3</span><div>That's it — look up a word to test it</div></li>
+        </ol>
+        <button class="btn-primary">Open System Settings</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Settings -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-label">screen 06 — preferences</span>
+      <h2>Settings</h2>
+      <p>Deliberately small. The capture shortcut mirrors the system's, so nothing new to learn.
+        <span class="vi">Cố tình tối giản. Shortcut trùng với hệ thống nên không phải học thêm.</span>
+      </p>
+    </div>
+    <div class="stage">
+      <div class="window settings">
+        <div class="titlebar">
+          <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+          <span class="ttext">Settings</span>
+        </div>
+        <div class="set-body">
+          <div class="set-row">
+            <div class="sk">Capture shortcut <small>Mirrors macOS Look Up — observe only</small></div>
+            <div class="sv kbd-combo"><kbd>⌃</kbd><kbd>⌘</kbd><kbd>D</kbd></div>
+          </div>
+          <div class="set-row">
+            <div class="sk">Daily reminder <small>One notification per day</small></div>
+            <div class="sv">8:30 PM</div>
+          </div>
+          <div class="set-row">
+            <div class="sk">Daily goal <small>New cards introduced per day</small></div>
+            <div class="sv">20 cards</div>
+          </div>
+          <div class="set-row">
+            <div class="sk">Pronounce on reveal <small>Speak the word automatically</small></div>
+            <div class="switch off"><i></i></div>
+          </div>
+          <div class="set-row">
+            <div class="sk">Launch at login</div>
+            <div class="switch"><i></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-label">scope</span>
+      <h2>What ships first, what comes later</h2>
+      <p>The mockups above are the MVP. Everything in the later columns is designed-for but deferred to keep v1 tight.</p>
+    </div>
+    <div class="road">
+      <div class="col">
+        <span class="tag mvp">● MVP — v1</span>
+        <h4>Capture &amp; review</h4>
+        <ul>
+          <li>Ctrl+Cmd+D capture (word + sentence + source + IPA)</li>
+          <li>Local-only storage, fully offline</li>
+          <li>SM-2 spaced repetition</li>
+          <li>Daily notification + streak</li>
+          <li>Pronounce via system TTS</li>
+        </ul>
+      </div>
+      <div class="col">
+        <span class="tag later">○ Later</span>
+        <h4>Smarter cards</h4>
+        <ul>
+          <li>Fill-in-the-blank from the captured sentence</li>
+          <li>def→word &amp; multiple-choice card types</li>
+          <li>Leech detection for stubborn words</li>
+          <li>Auto tags / decks by source or topic</li>
+          <li>Vietnamese gloss via Apple Translate</li>
+        </ul>
+      </div>
+      <div class="col">
+        <span class="tag later">○ Later</span>
+        <h4>Insight &amp; reach</h4>
+        <ul>
+          <li>Weekly summary &amp; retention stats</li>
+          <li>Export to Anki (.apkg) / CSV</li>
+          <li>iCloud sync across Macs</li>
+          <li>AI examples &amp; mnemonics (Claude API)</li>
+          <li>Story made from today's words</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="page">
+    VocabLook — design mockups for review. Native SwiftUI · 100% local · built around the lookup you already use.
+  </footer>
+</div>
+
+<script>
+  const btn = document.getElementById('themeBtn');
+  const icon = document.getElementById('themeIcon');
+  const label = document.getElementById('themeLabel');
+  btn.addEventListener('click', () => {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (dark) {
+      document.documentElement.removeAttribute('data-theme');
+      icon.textContent = '◐'; label.textContent = 'Dark';
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      icon.textContent = '◑'; label.textContent = 'Light';
+    }
+  });
+</script>
