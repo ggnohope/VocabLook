@@ -33,13 +33,14 @@ struct OnboardingView: View {
         }
         .padding(30)
         .frame(width: 440)
+        .tint(Color.inkIndigo)
         .onAppear { _ = Permissions.promptAccessibility() }
     }
 
     private func step(_ n: Int, _ text: String) -> some View {
         HStack(spacing: 11) {
             Text("\(n)").font(.system(size: 12, weight: .semibold)).foregroundColor(.white)
-                .frame(width: 22, height: 22).background(Color.accentColor, in: Circle())
+                .frame(width: 22, height: 22).background(Color.inkIndigo, in: Circle())
             Text(text).font(.system(size: 13))
             Spacer()
         }

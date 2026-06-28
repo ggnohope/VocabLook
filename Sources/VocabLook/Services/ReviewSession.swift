@@ -20,7 +20,17 @@ final class ReviewSession: ObservableObject {
     init(store: Store = .shared, now: Date = Date()) {
         self.store = store
         let due = (try? store.dueCards(now: now)) ?? []
-        let items = due.map { Item(card: $0.card, entry: $0.entry) }
+        let goal = max(0, Settings.dailyGoal)
+        var newSeen = 0
+        let selected = due.filter { pair in
+            if pair.card.repetitions == 0 {
+                guard newSeen < goal else { return false }
+                newSeen += 1
+                return true
+            }
+            return true
+        }
+        let items = selected.map { Item(card: $0.card, entry: $0.entry) }
         self.queue = items
         self.total = items.count
     }

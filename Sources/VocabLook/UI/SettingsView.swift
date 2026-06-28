@@ -33,5 +33,6 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .padding(20)
         .frame(width: 460)
+        .tint(Color.inkIndigo)
     }
 }

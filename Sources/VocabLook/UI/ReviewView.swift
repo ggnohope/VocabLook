@@ -17,6 +17,7 @@ struct ReviewView: View {
         .frame(width: 460)
         .frame(minHeight: 520)
         .background(KeyCatcher { handleKey($0) })
+        .tint(Color.inkIndigo)
     }
 
     // MARK: - Card
@@ -87,7 +88,7 @@ struct ReviewView: View {
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 8))
-        .overlay(Rectangle().fill(Color.accentColor).frame(width: 3), alignment: .leading)
+        .overlay(Rectangle().fill(Color.inkIndigo).frame(width: 3), alignment: .leading)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .padding(.bottom, 20)
     }
@@ -95,7 +96,7 @@ struct ReviewView: View {
     private func highlight(_ text: String, term: String) -> AttributedString {
         var attr = AttributedString(text)
         if let range = attr.range(of: term, options: .caseInsensitive) {
-            attr[range].foregroundColor = .accentColor
+            attr[range].foregroundColor = .inkIndigo
             attr[range].inlinePresentationIntent = .stronglyEmphasized
         }
         return attr
@@ -106,7 +107,7 @@ struct ReviewView: View {
             gradeButton(.again, .red)
             gradeButton(.hard, .orange)
             gradeButton(.good, .green)
-            gradeButton(.easy, .accentColor)
+            gradeButton(.easy, .inkIndigo)
         }
     }
 

@@ -20,6 +20,7 @@ struct MenuBarContentView: View {
         }
         .padding(14)
         .frame(width: 320)
+        .tint(Color.inkIndigo)
         .onAppear { app.refresh() }
         .onReceive(NotificationCenter.default.publisher(for: .openReviewWindow)) { _ in
             openWindow(id: "review")
@@ -39,7 +40,7 @@ struct MenuBarContentView: View {
             if app.streak > 0 {
                 Text("🔥 \(app.streak)").font(.system(size: 11.5, weight: .semibold))
                     .padding(.horizontal, 8).padding(.vertical, 3)
-                    .background(Color.accentColor.opacity(0.14), in: Capsule())
+                    .background(Color.inkIndigo.opacity(0.14), in: Capsule())
             }
             Button { openWindow(id: "settings") } label: { Image(systemName: "gearshape") }
                 .buttonStyle(.plain).foregroundColor(.secondary)
@@ -61,7 +62,7 @@ struct MenuBarContentView: View {
             .disabled(app.dueCount == 0)
         }
         .padding(14)
-        .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 11))
+        .background(Color.inkIndigo, in: RoundedRectangle(cornerRadius: 11))
         .foregroundColor(.white)
     }
 

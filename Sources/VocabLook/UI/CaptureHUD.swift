@@ -28,5 +28,6 @@ struct CaptureHUD: View {
         .padding(.vertical, 12)
         .frame(width: 320)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+        .tint(Color.inkIndigo)
     }
 }
