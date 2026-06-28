@@ -16,14 +16,15 @@ final class LookupCapturer {
         let frontApp = NSWorkspace.shared.frontmostApplication
         let sourceApp = frontApp?.localizedName
 
-        if let element = focusedElement() {
-            if let selected = selectedText(of: element),
-               !selected.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                let context = surroundingSentence(of: element, selected: selected)
-                return CapturedLookup(term: clean(selected), context: context,
-                                      sourceApp: sourceApp, sourceDetail: windowTitle(of: element))
-            }
+        // Native apps expose the selection via the Accessibility API…
+        if let element = focusedElement(),
+           let selected = selectedText(of: element),
+           !selected.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let context = surroundingSentence(of: element, selected: selected)
+            return CapturedLookup(term: clean(selected), context: context,
+                                  sourceApp: sourceApp, sourceDetail: windowTitle(of: element))
         }
+        // …web/Electron content often doesn't, so fall back to a clipboard copy.
         return copyFallback(sourceApp: sourceApp)
     }
 
