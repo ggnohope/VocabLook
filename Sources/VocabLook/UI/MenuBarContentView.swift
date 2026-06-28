@@ -21,6 +21,14 @@ struct MenuBarContentView: View {
         .padding(14)
         .frame(width: 320)
         .onAppear { app.refresh() }
+        .onReceive(NotificationCenter.default.publisher(for: .openReviewWindow)) { _ in
+            openWindow(id: "review")
+            NSApp.activate(ignoringOtherApps: true)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openOnboarding)) { _ in
+            openWindow(id: "onboarding")
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 
     private var header: some View {
