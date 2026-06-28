@@ -41,19 +41,13 @@ final class Reminder: NSObject, UNUserNotificationCenterDelegate {
         completionHandler([.banner, .sound])
     }
 
-    /// Tapping the notification opens the review window.
+    /// Tapping the notification opens the review window (on the current Space).
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         DispatchQueue.main.async {
-            NSApp.activate(ignoringOtherApps: true)
-            NotificationCenter.default.post(name: .openReviewWindow, object: nil)
+            WindowManager.shared.showReview(scope: .due)
         }
         completionHandler()
     }
-}
-
-extension Notification.Name {
-    static let openReviewWindow = Notification.Name("vocablook.openReview")
-    static let openOnboarding = Notification.Name("vocablook.openOnboarding")
 }

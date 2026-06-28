@@ -94,6 +94,17 @@ final class Store {
         }
     }
 
+    /// Every card paired with its entry, oldest-due first. Used by "Review all" (practice ahead).
+    func allCards() throws -> [(card: Card, entry: Entry)] {
+        try dbQueue.read { db in
+            let cards = try Card.order(Column("dueAt").asc).fetchAll(db)
+            return try cards.compactMap { card in
+                guard let entry = try Entry.fetchOne(db, key: card.entryId) else { return nil }
+                return (card, entry)
+            }
+        }
+    }
+
     func updateCard(_ card: Card) throws {
         try dbQueue.write { db in try card.update(db) }
     }

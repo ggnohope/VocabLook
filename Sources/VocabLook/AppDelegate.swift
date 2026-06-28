@@ -9,6 +9,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         AppLog.log("launch: accessibility=\(Permissions.isAccessibilityTrusted()) inputMonitoring=\(Permissions.isInputMonitoringTrusted()) didOnboard=\(Settings.didOnboard)")
         NSApp.setActivationPolicy(.accessory)
 
+        WindowManager.shared.appState = appState
+
         let coordinator = CaptureCoordinator(appState: appState)
         coordinator.start()
         self.coordinator = coordinator

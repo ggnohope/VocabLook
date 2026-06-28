@@ -5,24 +5,11 @@ struct VocabLookApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
+        // Auxiliary windows (review/settings/onboarding) are managed by WindowManager (AppKit) so
+        // they open on the user's current Space; see WindowManager.swift.
         MenuBarExtra("VocabLook", systemImage: "book.closed") {
             MenuBarContentView().environmentObject(appDelegate.appState)
         }
         .menuBarExtraStyle(.window)
-
-        Window("Review", id: "review") {
-            ReviewView().environmentObject(appDelegate.appState)
-        }
-        .windowResizability(.contentSize)
-
-        Window("Settings", id: "settings") {
-            SettingsView().environmentObject(appDelegate.appState)
-        }
-        .windowResizability(.contentSize)
-
-        Window("Welcome to VocabLook", id: "onboarding") {
-            OnboardingView().environmentObject(appDelegate.appState)
-        }
-        .windowResizability(.contentSize)
     }
 }

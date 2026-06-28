@@ -2,9 +2,14 @@ import SwiftUI
 
 struct ReviewView: View {
     @EnvironmentObject var app: AppState
-    @StateObject private var session = ReviewSession()
-    @Environment(\.dismiss) private var dismiss
+    @StateObject private var session: ReviewSession
+    private let onClose: () -> Void
     private let pronouncer = Pronouncer()
+
+    init(scope: ReviewSession.Scope = .due, onClose: @escaping () -> Void = {}) {
+        _session = StateObject(wrappedValue: ReviewSession(scope: scope))
+        self.onClose = onClose
+    }
 
     var body: some View {
         Group {
@@ -14,8 +19,7 @@ struct ReviewView: View {
                 card(item)
             }
         }
-        .frame(width: 460)
-        .frame(minHeight: 520)
+        .frame(width: 460, height: 600)
         .background(KeyCatcher { handleKey($0) })
         .tint(Color.inkIndigo)
     }
@@ -25,58 +29,95 @@ struct ReviewView: View {
     private func card(_ item: ReviewSession.Item) -> some View {
         VStack(spacing: 0) {
             progressBar
-            VStack(spacing: 6) {
-                if let src = item.entry.sourceApp {
-                    Label(src, systemImage: "globe")
-                        .font(.system(size: 11.5)).foregroundColor(.secondary)
-                        .padding(.horizontal, 10).padding(.vertical, 4)
-                        .background(Color(nsColor: .controlBackgroundColor), in: Capsule())
-                        .padding(.bottom, 14)
-                }
-                Text(item.entry.term)
-                    .font(.system(size: session.revealed ? 34 : 46, weight: .semibold, design: .serif))
-                if let ipa = item.entry.ipa {
-                    HStack(spacing: 12) {
-                        Text(ipa).font(.system(size: 15, design: .monospaced)).foregroundColor(.secondary)
-                        Button { pronouncer.speak(item.entry.term) } label: {
-                            Image(systemName: "speaker.wave.2.fill")
-                        }.buttonStyle(.bordered).clipShape(Circle())
-                    }.padding(.top, 8)
-                }
-                if let pos = item.entry.partOfSpeech {
-                    Text(pos).font(.system(size: 14, design: .serif)).italic().foregroundColor(.secondary)
-                }
-            }
-            .padding(.top, 14)
-
             if session.revealed {
+                wordBlock(item, compact: true)
                 revealedContent(item)
             } else {
-                Text("Press Space to reveal")
-                    .font(.system(size: 12)).foregroundColor(.secondary).padding(.top, 26)
                 Spacer()
+                wordBlock(item, compact: false)
+                Spacer()
+                Text("Press Space to reveal")
+                    .font(.system(size: 12)).foregroundColor(.secondary)
+                    .padding(.bottom, 10)
             }
         }
-        .padding(.horizontal, 26).padding(.bottom, 24)
+        .padding(.horizontal, 26)
+        .padding(.bottom, 20)
+    }
+
+    private func wordBlock(_ item: ReviewSession.Item, compact: Bool) -> some View {
+        VStack(spacing: 6) {
+            if let src = item.entry.sourceApp {
+                Label(src, systemImage: "globe")
+                    .font(.system(size: 11.5)).foregroundColor(.secondary)
+                    .padding(.horizontal, 10).padding(.vertical, 4)
+                    .background(Color(nsColor: .controlBackgroundColor), in: Capsule())
+                    .padding(.bottom, 8)
+            }
+            Text(item.entry.term)
+                .font(.system(size: compact ? 32 : 46, weight: .semibold, design: .serif))
+                .multilineTextAlignment(.center)
+            if let ipa = item.entry.ipa {
+                HStack(spacing: 12) {
+                    Text(ipa).font(.system(size: 15, design: .monospaced)).foregroundColor(.secondary)
+                    Button { pronouncer.speak(item.entry.term) } label: {
+                        Image(systemName: "speaker.wave.2.fill")
+                    }.buttonStyle(.bordered).clipShape(Circle())
+                }.padding(.top, 6)
+            }
+            if let pos = item.entry.partOfSpeech {
+                Text(pos).font(.system(size: 14, design: .serif)).italic().foregroundColor(.secondary)
+            }
+        }
+        .padding(.top, 8)
     }
 
     private func revealedContent(_ item: ReviewSession.Item) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Divider().padding(.vertical, 22)
-            if let def = item.entry.definition {
-                Text(def).font(.system(size: 16)).frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.bottom, 14)
-            } else {
-                Text("No dictionary definition was found — recall the meaning from memory.")
-                    .font(.system(size: 14)).foregroundColor(.secondary).padding(.bottom, 14)
+            Divider().padding(.vertical, 14)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    if let def = DefinitionService.displayText(for: item.entry.term,
+                                                              fallback: item.entry.definition) {
+                        Text(def).font(.system(size: 15))
+                            .lineSpacing(4)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .textSelection(.enabled)
+                    } else {
+                        Text("No dictionary definition was found — recall the meaning from memory.")
+                            .font(.system(size: 14)).foregroundColor(.secondary)
+                    }
+                    vietnameseSection(item.entry.term)
+                    if let ctx = item.entry.contextText {
+                        contextBlock(ctx, term: item.entry.term, source: item.entry.sourceApp)
+                    }
+                }
             }
-            if let ctx = item.entry.contextText {
-                contextBlock(ctx, term: item.entry.term, source: item.entry.sourceApp)
-            }
+            Spacer(minLength: 14)
             grades
-            Spacer(minLength: 0)
         }
         .onAppear { if Settings.pronounceOnReveal { pronouncer.speak(item.entry.term) } }
+    }
+
+    /// Vietnamese meaning from the user's installed Vietnamese–English dictionary (synchronous).
+    @ViewBuilder
+    private func vietnameseSection(_ term: String) -> some View {
+        if let vi = VietnameseDictionary.lookup(term), !vi.isEmpty {
+            VStack(alignment: .leading, spacing: 6) {
+                Label("Tiếng Việt", systemImage: "character.book.closed")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(.inkIndigo)
+                Text(vi)
+                    .font(.system(size: 14.5))
+                    .lineSpacing(3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .textSelection(.enabled)
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.inkIndigo.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
+        }
     }
 
     private func contextBlock(_ ctx: String, term: String, source: String?) -> some View {
@@ -90,7 +131,6 @@ struct ReviewView: View {
         .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 8))
         .overlay(Rectangle().fill(Color.inkIndigo).frame(width: 3), alignment: .leading)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .padding(.bottom, 20)
     }
 
     private func highlight(_ text: String, term: String) -> AttributedString {
@@ -134,9 +174,9 @@ struct ReviewView: View {
     private var finished: some View {
         VStack(spacing: 12) {
             Image(systemName: "checkmark.seal.fill").font(.system(size: 40)).foregroundStyle(.tint)
-            Text("All done for today").font(.system(size: 19, weight: .semibold))
-            Text("🔥 \(app.streak)-day streak").foregroundColor(.secondary)
-            Button("Close") { dismiss() }.buttonStyle(.borderedProminent)
+            Text("All done").font(.system(size: 19, weight: .semibold))
+            if app.streak > 0 { Text("🔥 \(app.streak)-day streak").foregroundColor(.secondary) }
+            Button("Close") { onClose() }.buttonStyle(.borderedProminent)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(40)

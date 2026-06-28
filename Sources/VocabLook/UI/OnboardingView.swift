@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @Environment(\.dismiss) private var dismiss
+    private let onClose: () -> Void
     @State private var trusted = Permissions.isAccessibilityTrusted()
+
+    init(onClose: @escaping () -> Void = {}) { self.onClose = onClose }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -26,13 +28,13 @@ struct OnboardingView: View {
                 Button(trusted ? "Done ✓" : "I've enabled it") {
                     trusted = Permissions.isAccessibilityTrusted()
                     Settings.didOnboard = true
-                    if trusted { dismiss() }
+                    if trusted { onClose() }
                 }
                 .buttonStyle(.bordered)
             }
         }
         .padding(30)
-        .frame(width: 440)
+        .frame(width: 440, height: 440)
         .tint(Color.inkIndigo)
         .onAppear { _ = Permissions.promptAccessibility() }
     }
